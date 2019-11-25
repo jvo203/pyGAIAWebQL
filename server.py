@@ -1,5 +1,8 @@
 from http.server import BaseHTTPRequestHandler
 class Server(BaseHTTPRequestHandler):
+    def __init__(self, root):
+    # body of the constructor
+    self.htdocs = root
     def do_HEAD(self):
         return
     def do_POST(self):
