@@ -1,9 +1,6 @@
 from http.server import BaseHTTPRequestHandler
 
-class Server(BaseHTTPRequestHandler):
-    def __init__(self, htdocs):
-        self.htdocs = htdocs
-        
+class Server(BaseHTTPRequestHandler):   
     def do_HEAD(self):
         return
     
@@ -11,10 +8,15 @@ class Server(BaseHTTPRequestHandler):
         return
     
     def do_GET(self):
-        return
+        self.respond()
     
-    def handle_http(self):
-        return
+    def handle_http(self, status, content_type):
+        self.send_response(status)
+        self.send_header("Content-type", content_type)
+        self.end_headers()
+        return bytes('GAIAWebQL', 'UTF-8')
     
     def respond(self):
+        content = self.handle_http(200, 'text/html')
+        self.wfile.write(content)
         return

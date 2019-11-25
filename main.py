@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import time
-from http.server import HTTPServer
+from http.server import ThreadingHTTPServer
 from server import Server
 
 HOST_NAME = ''
 PORT_NUMBER = 8080
 
 if __name__ == '__main__':
-    httpd = HTTPServer((HOST_NAME, PORT_NUMBER), Server("htdocs"))
+    httpd = ThreadingHTTPServer((HOST_NAME, PORT_NUMBER), Server)
     print(time.asctime(), 'GAIAWebQL Server UP - %s:%s' % (HOST_NAME, PORT_NUMBER))
     try:
         httpd.serve_forever()
