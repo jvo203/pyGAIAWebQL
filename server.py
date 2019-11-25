@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
+import os
 
 class Server(BaseHTTPRequestHandler):   
     def do_HEAD(self):
@@ -21,11 +22,33 @@ class Server(BaseHTTPRequestHandler):
         self.end_headers()
         return bytes(response_content, "UTF-8")
     
+    def get_mime(self, filepath):
+        splitpath = os.path.splitext(filepath)
+        extension = splitpath[1]
+                
+        if extension in (".jpg", ".jpeg"):
+            return "image/jpeg"
+            
+        if extension == ".png":            
+            return "image/png"
+            
+        if extension == ".css":
+            return "text/css"
+        
+        if extension == ".js":
+            return "application/javascript"
+        
+        if extension == ".ico":
+            return "image/x-icon"                        
+        
+        return "text/plain"
+    
     def handle_http(self):
         #send "Not Found" by default
         status = 404
         content_type = "text/plain"
         response_content = "Not Found"
+        encoding = "UTF-8"
         
         #the root document
         if self.path == "/":
@@ -40,20 +63,18 @@ class Server(BaseHTTPRequestHandler):
                 status = 200
                 response_content = "GAIAWebQL"
             else:
-                if not ".." in self.path:
+                if not "../" in self.path:
                     filepath = Path("htdocs" + self.path)
                     if filepath.is_file():
                         status = 200
-                        content_type = "text/html"
+                        content_type = self.get_mime(filepath)
                         response_content = open(filepath)
-                        response_content = response_content.read() 
-        
-        
+                        response_content = response_content.read()                
         
         self.send_response(status)
         self.send_header('Content-type', content_type)
         self.end_headers()
-        return bytes(response_content, "UTF-8")
+        return bytes(response_content, encoding)
     
     def respond(self):
         content = self.handle_http()
