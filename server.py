@@ -11,25 +11,44 @@ class Server(BaseHTTPRequestHandler):
     def do_GET(self):
         self.respond()
     
-    def handle_http(self):
-        status = 200
+    def not_found(self):
+        status = 404
         content_type = "text/plain"
-        response_content = ""
+        response_content = "Not Found"
         
-        if self.path in routes:
-            print(routes[self.path])
-            route_content = routes[self.path]['htdocs']
-            filepath = Path("htdocs/{}".format(route_content))
+        self.send_response(status)
+        self.send_header('Content-type', content_type)
+        self.end_headers()
+        return bytes(response_content, "UTF-8")
+    
+    def handle_http(self):
+        #send "Not Found" by default
+        status = 404
+        content_type = "text/plain"
+        response_content = "Not Found"
+        
+        #the root document
+        if self.path == "/":
+            filepath = Path("htdocs/index.html")
             if filepath.is_file():
+                status = 200
                 content_type = "text/html"
-                response_content = open("htdocs/{}".format(route_content))
-                response_content = response_content.read()
+                response_content = open(filepath)
+                response_content = response_content.read()                           
+        else:            
+            if "GAIAWebQL.html" in self.path:
+                status = 200
+                response_content = "GAIAWebQL"
             else:
-                content_type = "text/plain"
-                response_content = "404 Not Found"
-        else:
-            content_type = "text/plain"
-            response_content = "404 Not Found"
+                if not ".." in self.path:
+                    filepath = Path("htdocs" + self.path)
+                    if filepath.is_file():
+                        status = 200
+                        content_type = "text/html"
+                        response_content = open(filepath)
+                        response_content = response_content.read() 
+        
+        
         
         self.send_response(status)
         self.send_header('Content-type', content_type)
