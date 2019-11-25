@@ -27,21 +27,21 @@ class Server(BaseHTTPRequestHandler):
         extension = splitpath[1]
                 
         if extension in (".jpg", ".jpeg"):
-            return "image/jpeg"
+            return "image/jpeg", ""
             
         if extension == ".png":            
-            return "image/png"
+            return "image/png", ""
             
         if extension == ".css":
-            return "text/css"
+            return "text/css", "UTF-8"
         
         if extension == ".js":
-            return "application/javascript"
+            return "application/javascript", "UTF-8"
         
         if extension == ".ico":
-            return "image/x-icon"                        
+            return "image/x-icon", ""     
         
-        return "text/plain"
+        return "text/plain", "UTF-8"
     
     def handle_http(self):
         #send "Not Found" by default
@@ -67,14 +67,21 @@ class Server(BaseHTTPRequestHandler):
                     filepath = Path("htdocs" + self.path)
                     if filepath.is_file():
                         status = 200
-                        content_type = self.get_mime(filepath)
-                        response_content = open(filepath)
+                        content_type, encoding = self.get_mime(filepath)
+                        if encoding == "UTF-8":
+                            response_content = open(filepath, 'r')
+                        else:
+                            response_content = open(filepath, 'rb')
                         response_content = response_content.read()                
         
         self.send_response(status)
         self.send_header('Content-type', content_type)
         self.end_headers()
-        return bytes(response_content, encoding)
+                
+        if encoding != "":
+            return bytes(response_content, encoding)
+        else:
+            return response_content
     
     def respond(self):
         content = self.handle_http()
