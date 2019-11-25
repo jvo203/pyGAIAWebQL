@@ -1,4 +1,6 @@
 routes = {
-    '/' : 'GAIAWebQL',
-    '/GAIAWebQL.html' : 'N/A'
+    '/' : {
+    'htdocs' : 'index.html'
+  },
+    '/GAIAWebQL.html' : 'GAIAWebQL'
 }
