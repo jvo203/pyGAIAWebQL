@@ -1,4 +1,5 @@
 from http.server import BaseHTTPRequestHandler
+from router import routes
 
 class Server(BaseHTTPRequestHandler):   
     def do_HEAD(self):
