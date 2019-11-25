@@ -7,7 +7,7 @@ HOST_NAME = ''
 PORT_NUMBER = 8080
 
 if __name__ == '__main__':
-    httpd = HTTPServer((HOST_NAME, PORT_NUMBER), Server)
+    httpd = HTTPServer((HOST_NAME, PORT_NUMBER), Server("htdocs"))
     print(time.asctime(), 'GAIAWebQL Server UP - %s:%s' % (HOST_NAME, PORT_NUMBER))
     try:
         httpd.serve_forever()
