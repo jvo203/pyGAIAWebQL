@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 import os
-
+from urllib import parse
 
 class Server(BaseHTTPRequestHandler):
     def do_HEAD(self):
@@ -62,9 +62,14 @@ class Server(BaseHTTPRequestHandler):
                 response_content = response_content.read()
         else:
             if "GAIAWebQL.html" in self.path:
-                status = 200
-                response_content = "GAIAWebQL"
+                pos = self.path.find('?')
+                if pos > 0:                    
+                    params = parse.parse_qs(self.path[(pos+1):])
+                    print(params)
+                    status = 200
+                    response_content = "GAIAWebQL"                    
             else:
+                # a guard against simple directory traversal exploits
                 if not "../" in self.path:
                     filepath = Path("htdocs" + self.path)
                     if filepath.is_file():
