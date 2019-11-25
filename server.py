@@ -1,5 +1,5 @@
 from http.server import BaseHTTPRequestHandler
-from router import routes
+from pathlib import Path
 
 class Server(BaseHTTPRequestHandler):   
     def do_HEAD(self):
@@ -11,14 +11,31 @@ class Server(BaseHTTPRequestHandler):
     def do_GET(self):
         self.respond()
     
-    def handle_http(self, status, content_type):
+    def handle_http(self):
+        status = 200
+        content_type = "text/plain"
+        response_content = ""
+        
+        if self.path in routes:
+            print(routes[self.path])
+            route_content = routes[self.path]['htdocs']
+            filepath = Path("htdocs/{}".format(route_content))
+            if filepath.is_file():
+                content_type = "text/html"
+                response_content = open("htdocs/{}".format(route_content))
+                response_content = response_content.read()
+            else:
+                content_type = "text/plain"
+                response_content = "404 Not Found"
+        else:
+            content_type = "text/plain"
+            response_content = "404 Not Found"
+        
         self.send_response(status)
-        self.send_header("Content-type", content_type)
+        self.send_header('Content-type', content_type)
         self.end_headers()
-        route_content = routes[self.path]
-        return bytes(route_content, 'UTF-8')
+        return bytes(response_content, "UTF-8")
     
     def respond(self):
-        content = self.handle_http(200, 'text/html')
+        content = self.handle_http()
         self.wfile.write(content)
-        return
