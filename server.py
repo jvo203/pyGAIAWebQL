@@ -6,6 +6,7 @@ from urllib import parse
 
 import multiprocessing
 import main_worker
+import uuid
 
 
 class Server(SimpleHTTPRequestHandler):
@@ -23,8 +24,9 @@ class Server(SimpleHTTPRequestHandler):
                     return
 
                 print(params)
+                id = uuid.uuid4()
                 search = multiprocessing.Process(
-                    target=main_worker.execute_gaia, args=(params,))
+                    target=main_worker.execute_gaia, args=(params, id))
                 search.start()
 
                 self.send_response(200)
