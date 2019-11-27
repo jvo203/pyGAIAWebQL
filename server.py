@@ -5,7 +5,7 @@ import io
 from urllib import parse
 
 import multiprocessing
-import main_worker
+import gaia_worker
 import uuid
 
 
@@ -25,7 +25,7 @@ class Server(SimpleHTTPRequestHandler):
 
                 id = uuid.uuid4()
                 search = multiprocessing.Process(
-                    target=main_worker.execute_gaia, args=(params, id))
+                    target=gaia_worker.execute_gaia, args=(params, id))
                 search.start()
 
                 self.send_response(200)
