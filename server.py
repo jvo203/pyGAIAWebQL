@@ -24,7 +24,7 @@ class Server(SimpleHTTPRequestHandler):
 
                 print(params)
                 search = multiprocessing.Process(
-                    target=main_worker.execute_gaia, args=params)
+                    target=main_worker.execute_gaia, args=(params,))
                 search.start()
 
                 self.send_response(200)
