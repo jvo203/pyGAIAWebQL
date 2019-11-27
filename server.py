@@ -3,7 +3,9 @@ from pathlib import Path
 import os
 import io
 from urllib import parse
+
 import multiprocessing
+import main_worker
 
 
 class Server(SimpleHTTPRequestHandler):
@@ -19,6 +21,11 @@ class Server(SimpleHTTPRequestHandler):
                 if not params:
                     self.send_error(501)
                     return
+
+                print(params)
+                search = multiprocessing.Process(
+                    target=main_worker.execute_gaia, args=params)
+                search.start()
 
                 self.send_response(200)
                 self.send_header('Content-type', "text/html")
