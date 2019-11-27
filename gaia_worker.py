@@ -1,5 +1,6 @@
 import multiprocessing
 import csv
+import psycopg2
 
 
 def execute_gaia(params, sessionid):
@@ -20,8 +21,8 @@ def execute_gaia(params, sessionid):
         print("PostgreSQL cluster database #entries:", len(entries))
 
         # make a shared queue
-        # pass the queue and params to #<num_procs> search workers (processes)
 
+        # pass the queue and params to #<num_procs> search workers (processes)
         for pid in range(num_procs):
             search = multiprocessing.Process(
                 target=search_gaia_db, args=(params, pid, num_procs, entries))
@@ -35,8 +36,31 @@ def search_gaia_db(params, pid, step, entries):
 
     for index in range(pid, len(entries), step):
         entry = entries[index]
-        conn_str = "dbname=gaiadr2 host=" + \
-            entry[4] + " port=" + entry[5] + " user=" + \
-            entry[3] + " password=" + entry[3] + "!"
 
-        print("pid:", pid, "index:", index, conn_str)
+        try:
+            conn = psycopg2.connect(user=entry[3],
+                                    password=entry[3]+"!",
+                                    host=entry[4],
+                                    port=entry[5],
+                                    database="gaiadr2")
+
+            cursor = conn.cursor()
+            # Print PostgreSQL Connection properties
+            #print(conn.get_dsn_parameters(), "\n")
+
+            # Print PostgreSQL version
+            #cursor.execute("SELECT version();")
+            #record = cursor.fetchone()
+            #print("You are connected to - ", record, "\n")
+            print("PostgreSQL connection successful.")
+
+        except (Exception, psycopg2.Error) as error:
+            print("Error while connecting to PostgreSQL", error)
+        finally:
+            # closing database connection.
+            if(conn):
+                cursor.close()
+                conn.close()
+                print("PostgreSQL connection is closed.")
+
+        print("pid:", pid, "index:", index, "done;\n")
