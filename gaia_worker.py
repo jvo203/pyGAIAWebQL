@@ -27,6 +27,8 @@ def execute_gaia(params, sessionid):
                 target=search_gaia_db, args=(params, tid, entries))
             search.start()
 
+        # process the results from the shared queue
+
 
 def search_gaia_db(params, tid, entries):
-    print("search_gaia_db process: ", tid)
+    print("search_gaia_db process tid", tid)
