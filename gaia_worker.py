@@ -24,11 +24,19 @@ def execute_gaia(params, sessionid):
 
         for pid in range(num_procs):
             search = multiprocessing.Process(
-                target=search_gaia_db, args=(params, pid, entries))
+                target=search_gaia_db, args=(params, pid, num_procs, entries))
             search.start()
 
         # process the results from the shared queue
 
 
-def search_gaia_db(params, pid, entries):
+def search_gaia_db(params, pid, step, entries):
     print("search_gaia_db process id", pid)
+
+    for index in range(pid, len(entries), step):
+        entry = entries[index]
+        conn_str = "dbname=gaiadr2 host=" + \
+            entry[4] + " port=" + entry[5] + " user=" + \
+            entry[3] + " password=" + entry[3] + "!"
+
+        print("pid:", pid, "index:", index, conn_str)
