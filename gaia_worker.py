@@ -71,3 +71,18 @@ def search_gaia_db(params, pid, step, entries, queue):
                 print("PostgreSQL connection is closed.")
 
         print("pid:", pid, "index:", index, "done;\n")
+
+
+def writer(count, queue):
+    # Write to the queue
+    for ii in range(0, count):
+        queue.put(ii)             # Write 'count' numbers into the queue
+    queue.put('DONE')
+
+
+def process_queue(queue):
+    # Read from the queue; this will be spawned as a separate Process
+    while True:
+        msg = queue.get()         # Read from the queue and do nothing
+        if (msg == 'DONE'):
+            break
