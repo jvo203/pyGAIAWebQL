@@ -1,6 +1,6 @@
-def execute_gaia(params):    
+def execute_gaia(params, sessionid):    
     """thread worker function"""    
-    print('Worker:', params)
+    print('Session ID: ', sessionid, '-->', params)
     
     if 'xmin' in params:
         print(params['xmin'])
