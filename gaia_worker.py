@@ -22,13 +22,13 @@ def execute_gaia(params, sessionid):
         # make a shared queue
         # pass the queue and params to #<num_procs> search workers (processes)
 
-        for tid in range(num_procs):
+        for pid in range(num_procs):
             search = multiprocessing.Process(
-                target=search_gaia_db, args=(params, tid, entries))
+                target=search_gaia_db, args=(params, pid, entries))
             search.start()
 
         # process the results from the shared queue
 
 
-def search_gaia_db(params, tid, entries):
-    print("search_gaia_db process tid", tid)
+def search_gaia_db(params, pid, entries):
+    print("search_gaia_db process id", pid)
