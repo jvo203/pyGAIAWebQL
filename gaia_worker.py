@@ -19,5 +19,14 @@ def execute_gaia(params, sessionid):
             entries.append(entry)
         print("PostgreSQL cluster database #entries:", len(entries))
 
-    # make a shared queue
-    # pass the queue and params to #<num_procs> search workers (processes)
+        # make a shared queue
+        # pass the queue and params to #<num_procs> search workers (processes)
+
+        for tid in range(num_procs):
+            search = multiprocessing.Process(
+                target=search_gaia_db, args=(params, tid, entries))
+            search.start()
+
+
+def search_gaia_db(params, tid, entries):
+    print("search_gaia_db process: ", tid)
