@@ -48,5 +48,6 @@ class Server(SimpleHTTPRequestHandler):
                 html.write("</body></html>")
 
                 self.wfile.write(bytes(html.getvalue(), "UTF-8"))
+                html.close()
         else:
             super().do_GET()
