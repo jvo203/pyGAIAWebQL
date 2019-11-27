@@ -23,12 +23,18 @@ def execute_gaia(params, sessionid):
         # make a shared queue
 
         # pass the queue and params to #<num_procs> search workers (processes)
+        jobs = []
         for pid in range(num_procs):
             search = multiprocessing.Process(
                 target=search_gaia_db, args=(params, pid, num_procs, entries))
+            jobs.append(search)
             search.start()
 
         # process the results from the shared queue
+
+        # wait for all processes to end
+        for job in jobs:
+            job.join()
 
 
 def search_gaia_db(params, pid, step, entries):
