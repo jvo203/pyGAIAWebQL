@@ -3,6 +3,7 @@ from pathlib import Path
 import os
 import io
 from urllib import parse
+import multiprocessing
 
 
 class Server(SimpleHTTPRequestHandler):
@@ -14,8 +15,10 @@ class Server(SimpleHTTPRequestHandler):
             pos = self.path.find('?')
             if pos > 0:
                 params = parse.parse_qs(self.path[(pos+1):])
-                print(params)
-                # self.send_error(501)
+
+                if not params:
+                    self.send_error(501)
+                    return
 
                 self.send_response(200)
                 self.send_header('Content-type', "text/html")
