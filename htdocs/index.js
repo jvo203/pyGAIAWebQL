@@ -91,7 +91,7 @@ function view_gaia() {
 
     if (params != "") {
         params = params.substr(1);
-        var url = "/gaiawebql/GAIAWebQL.html?" + params;
+        var url = "/gaia/GAIAWebQL.html?" + params;
 
         window.location.href = url;
     }
