@@ -23,7 +23,6 @@ class Server(SimpleHTTPRequestHandler):
                     self.send_error(501)
                     return
 
-                print(params)
                 id = uuid.uuid4()
                 search = multiprocessing.Process(
                     target=main_worker.execute_gaia, args=(params, id))
@@ -56,6 +55,9 @@ class Server(SimpleHTTPRequestHandler):
                 html.write("<script>var WS_SOCKET = 'ws://';</script>")
 
                 html.write("<title>GAIA DR2 WebQL</title></head><body>\n")
+                html.write(
+                    "<div id='session-data' style='width: 0; height: 0;' ")
+                html.write("data-uuid='" + str(id) + "'></div>\n")
                 html.write("<h1>GAIA DR2 WebQL</h1>")
                 html.write("</body></html>")
 
