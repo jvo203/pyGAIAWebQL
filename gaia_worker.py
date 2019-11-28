@@ -7,9 +7,6 @@ def execute_gaia(params, datasetid):
     """thread worker function"""
     print('Session ID: ', datasetid, '-->', params)
 
-    if 'xmin' in params:
-        print(params['xmin'])
-
     num_procs = multiprocessing.cpu_count()
     print("launching", num_procs, "parallel search_gaia_db processes...")
 
@@ -60,13 +57,48 @@ def search_gaia_db(params, pid, step, entries, queue):
 
             cursor = conn.cursor()
             # Print PostgreSQL Connection properties
-            #print(conn.get_dsn_parameters(), "\n")
+            # print(conn.get_dsn_parameters(), "\n")
 
             # Print PostgreSQL version
-            #cursor.execute("SELECT version();")
-            #record = cursor.fetchone()
-            #print("You are connected to - ", record, "\n")
+            # cursor.execute("SELECT version();")
+            # record = cursor.fetchone()
+            # print("You are connected to - ", record, "\n")
             print("PostgreSQL connection successful.")
+
+            sql = "select count(*) from " + \
+                entry[0] + "." + entry[1] + \
+                " where parallax > 0 and radial_velocity is not null"
+            sql2 = "select ra,dec,phot_g_mean_mag,bp_rp,parallax,pmra,pmdec,radial_velocity from " + \
+                entry[0] + "." + entry[1] + \
+                " where parallax > 0 and radial_velocity is not null"
+
+            # where
+            if 'where' in params:
+                where = params['where']
+                if where:
+                    sql += " and " + where[0]
+                    sql2 += " and " + where[0]
+
+            # parallax_over_error
+            if 'parallax_over_error' in params:
+                parallax = params['parallax_over_error']
+                if parallax:
+                    sql += " and parallax_over_error > " + parallax[0]
+                    sql2 += " and parallax_over_error > " + parallax[0]
+
+            # finish the sql
+            sql += ";"
+            sql2 += ";"
+            #sql += " limit 1;"
+
+            # print(sql)
+            cursor.execute(sql)
+            no_records = cursor.fetchone()[0]
+            print("SQL(" + sql + ") - " + str(no_records) + "\n")
+
+            cursor.execute(sql2)
+            record = cursor.fetchone()
+            print(record)
 
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
@@ -78,13 +110,6 @@ def search_gaia_db(params, pid, step, entries, queue):
                 print("PostgreSQL connection is closed.")
 
         print("pid:", pid, "index:", index, "done;\n")
-
-
-def writer(count, queue):
-    # Write to the queue
-    for ii in range(0, count):
-        queue.put(ii)             # Write 'count' numbers into the queue
-    queue.put('DONE')
 
 
 def process_queue(queue):
