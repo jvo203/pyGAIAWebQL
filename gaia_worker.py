@@ -60,13 +60,6 @@ def search_gaia_db(params, pid, step, entries, queue):
                                     database="gaiadr2")
 
             cursor = conn.cursor()
-            # Print PostgreSQL Connection properties
-            # print(conn.get_dsn_parameters(), "\n")
-
-            # Print PostgreSQL version
-            # cursor.execute("SELECT version();")
-            # record = cursor.fetchone()
-            # print("You are connected to - ", record, "\n")
             #print("PostgreSQL connection successful.")
 
             sql = "select count(*) from " + \
@@ -131,6 +124,17 @@ def search_gaia_db(params, pid, step, entries, queue):
                                       radial_velocity=radial_velocity*u.km/u.s)
 
                     gc = orig.transform_to(coord.Galactocentric)
+
+                    X = gc.x  # [pc]
+                    Y = gc.y  # [pc]
+                    Z = gc.z  # [pc]
+
+                    gc.representation_type = 'cylindrical'
+
+                    R = gc.rho  # [pc]
+                    Phi = gc.phi  # [deg]
+
+                    # a final user validation
 
                     queue.put(gc)
 
