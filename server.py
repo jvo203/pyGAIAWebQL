@@ -6,8 +6,7 @@ from urllib import parse
 
 import multiprocessing
 import gaia_worker
-import json
-import uuid
+import hashlib
 
 
 class Server(SimpleHTTPRequestHandler):
@@ -23,18 +22,18 @@ class Server(SimpleHTTPRequestHandler):
                 if not params:
                     self.send_error(501)
                     return
+                
+                datasetid = hashlib.md5(str(params).encode()).hexdigest()
 
-                tmp = json.dumps(params)
-                print(tmp)
-
-                id = uuid.uuid4()
+                #id = uuid.uuid4()
                 search = multiprocessing.Process(
-                    target=gaia_worker.execute_gaia, args=(params, id))
+                    target=gaia_worker.execute_gaia, args=(params, datasetid))
                 search.start()
 
                 self.send_response(200)
-                self.send_header('Content-type', "text/html")
+                self.send_header('Content-type', "text/plain")
                 self.end_headers()
+                self.wfile.write(bytes(datasetid, "UTF-8"))
 
                 #html = io.StringIO()
                 # html.write(
@@ -64,6 +63,6 @@ class Server(SimpleHTTPRequestHandler):
                 #html.write("data-uuid='" + str(id) + "'></div>\n")
                 #html.write("<h1>GAIA DR2 WebQL</h1>")
                 # html.write("</body></html>")
-                #self.wfile.write(bytes(html.getvalue(), "UTF-8"))
+                #self.wfile.write(bytes(html.getvalue(), "UTF-8"))                
         else:
             super().do_GET()
