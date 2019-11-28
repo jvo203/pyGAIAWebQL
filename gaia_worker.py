@@ -2,6 +2,7 @@ import multiprocessing
 import csv
 import psycopg2
 
+import math
 import astropy.coordinates as coord
 import astropy.units as u
 
@@ -93,7 +94,7 @@ def search_gaia_db(params, pid, step, entries, queue):
             #sql += ";"
             #sql2 += ";"
             sql += " limit 10;"
-            sql += " limit 10;"
+            sql2 += " limit 10;"
 
             # print(sql)
             cursor.execute(sql)
@@ -103,8 +104,35 @@ def search_gaia_db(params, pid, step, entries, queue):
             cursor.execute(sql2)
             records = cursor.fetchall()
             for row in records:
-                # print(record)                
-                queue.put(row)
+                # print(record)
+                valid = True
+                try:
+                    ra = float(row[0])
+                    dec = float(row[1])
+                    phot_g_mean_mag = float(row[2])
+                    bp_rp = float(row[3])
+                    parallax = float(row[4])
+                    pmra = float(row[5])
+                    pmdec = float(row[6])
+                    radial_velocity = float(row[7])
+                except ValueError:
+                    valid = False
+
+                if valid:
+                    M_G = phot_g_mean_mag + 5.0 + \
+                        5.0 * math.log10(parallax / 1000.0)
+                    distance = 1000.0 / parallax  # distance[parsec, pc]
+
+                    orig = coord.ICRS(ra=ra*u.degree, dec=dec*u.degree,
+                                      distance=(distance*u.mas).to(u.pc,
+                                                                   u.parallax()),
+                                      pm_ra_cosdec=pmra*u.mas/u.yr,
+                                      pm_dec=pmdec*u.mas/u.yr,
+                                      radial_velocity=radial_velocity*u.km/u.s)
+
+                    gc = orig.transform_to(coord.Galactocentric)
+
+                    queue.put(gc)
 
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
