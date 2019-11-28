@@ -129,6 +129,10 @@ def search_gaia_db(params, pid, step, entries, queue):
                     Y = gc.y.value  # [pc]
                     Z = gc.z.value  # [pc]
 
+                    Vx = gc.v_x.value  # [km/s]
+                    Vy = gc.v_y.value  # [km/s]
+                    Vz = gc.v_z.value  # [km/s]
+
                     gc.representation_type = 'cylindrical'
 
                     R = gc.rho.value  # [pc]
@@ -176,7 +180,7 @@ def search_gaia_db(params, pid, step, entries, queue):
                         valid = False
 
                     if valid:
-                        queue.put(gc)
+                        queue.put((X, Y, Z, Vx, Vy, Vz, R, Phi))
 
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
