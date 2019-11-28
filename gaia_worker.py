@@ -43,7 +43,7 @@ def execute_gaia(params, datasetid):
 
 
 def search_gaia_db(params, pid, step, entries, queue):
-    print("search_gaia_db process id", pid)
+    #print("search_gaia_db process id", pid)
 
     for index in range(pid, len(entries), step):
         entry = entries[index]
@@ -63,7 +63,7 @@ def search_gaia_db(params, pid, step, entries, queue):
             # cursor.execute("SELECT version();")
             # record = cursor.fetchone()
             # print("You are connected to - ", record, "\n")
-            print("PostgreSQL connection successful.")
+            #print("PostgreSQL connection successful.")
 
             sql = "select count(*) from " + \
                 entry[0] + "." + entry[1] + \
@@ -94,11 +94,12 @@ def search_gaia_db(params, pid, step, entries, queue):
             # print(sql)
             cursor.execute(sql)
             no_records = cursor.fetchone()[0]
-            print("SQL(" + sql + ") - " + str(no_records) + "\n")
+            #print("SQL(" + sql + ") - " + str(no_records) + "\n")
 
             cursor.execute(sql2)
             record = cursor.fetchone()
-            print(record)
+            # print(record)
+            queue.put(record)
 
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
@@ -107,7 +108,7 @@ def search_gaia_db(params, pid, step, entries, queue):
             if(conn):
                 cursor.close()
                 conn.close()
-                print("PostgreSQL connection is closed.")
+                #print("PostgreSQL connection is closed.")
 
         print("pid:", pid, "index:", index, "done;\n")
 
@@ -118,3 +119,5 @@ def process_queue(queue):
         msg = queue.get()         # Read from the queue and do nothing
         if (msg == 'DONE'):
             break
+        else:
+            print("queue -", msg)
