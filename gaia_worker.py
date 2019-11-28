@@ -64,10 +64,10 @@ def search_gaia_db(params, pid, step, entries, queue):
 
             sql = "select count(*) from " + \
                 entry[0] + "." + entry[1] + \
-                " where parallax > 0 and radial_velocity is not null"
+                " where parallax > 0 and ra is not null and dec is not null and phot_g_mean_mag is not null and bp_rp is not null and pmra is not null and pmdec is not null and radial_velocity is not null"
             sql2 = "select ra,dec,phot_g_mean_mag,bp_rp,parallax,pmra,pmdec,radial_velocity from " + \
                 entry[0] + "." + entry[1] + \
-                " where parallax > 0 and radial_velocity is not null"
+                " where parallax > 0 and ra is not null and dec is not null and phot_g_mean_mag is not null and bp_rp is not null and pmra is not null and pmdec is not null and radial_velocity is not null"
 
             # where
             if 'where' in params:
@@ -84,10 +84,10 @@ def search_gaia_db(params, pid, step, entries, queue):
                     sql2 += " and parallax_over_error > " + parallax[0]
 
             # finish the sql
-            #sql += ";"
-            #sql2 += ";"
-            sql += " limit 10;"
-            sql2 += " limit 10;"
+            sql += ";"
+            sql2 += ";"
+            #sql += " limit 1;"
+            #sql2 += " limit 1;"
 
             # print(sql)
             cursor.execute(sql)
@@ -125,18 +125,58 @@ def search_gaia_db(params, pid, step, entries, queue):
 
                     gc = orig.transform_to(coord.Galactocentric)
 
-                    X = gc.x  # [pc]
-                    Y = gc.y  # [pc]
-                    Z = gc.z  # [pc]
+                    X = gc.x.value  # [pc]
+                    Y = gc.y.value  # [pc]
+                    Z = gc.z.value  # [pc]
 
                     gc.representation_type = 'cylindrical'
 
-                    R = gc.rho  # [pc]
-                    Phi = gc.phi  # [deg]
+                    R = gc.rho.value  # [pc]
+                    Phi = gc.phi.value  # [deg]
 
                     # a final user validation
+                    try:
+                        if 'xmin' in params:
+                            xmin = params['xmin']
+                            if xmin:
+                                if X < 1000 * float(xmin[0]):
+                                    valid = False
 
-                    queue.put(gc)
+                        if 'xmax' in params:
+                            xmax = params['xmax']
+                            if xmax:
+                                if X > 1000 * float(xmax[0]):
+                                    valid = False
+
+                        if 'ymin' in params:
+                            ymin = params['ymin']
+                            if ymin:
+                                if Y < 1000 * float(ymin[0]):
+                                    valid = False
+
+                        if 'ymax' in params:
+                            ymax = params['ymax']
+                            if ymax:
+                                if Y > 1000 * float(ymax[0]):
+                                    valid = False
+
+                        if 'zmin' in params:
+                            zmin = params['zmin']
+                            if zmin:
+                                if Z < 1000 * float(zmin[0]):
+                                    valid = False
+
+                        if 'zmax' in params:
+                            zmax = params['zmax']
+                            if zmax:
+                                if Z > 1000 * float(zmax[0]):
+                                    valid = False
+
+                    except ValueError:
+                        valid = False
+
+                    if valid:
+                        queue.put(gc)
 
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
@@ -147,7 +187,7 @@ def search_gaia_db(params, pid, step, entries, queue):
                 conn.close()
                 #print("PostgreSQL connection is closed.")
 
-        print("pid:", pid, "index:", index, "done;\n")
+        #print("pid:", pid, "index:", index, "done;\n")
 
 
 def process_queue(queue):
