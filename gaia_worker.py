@@ -3,9 +3,9 @@ import csv
 import psycopg2
 
 
-def execute_gaia(params, sessionid):
+def execute_gaia(params, datasetid):
     """thread worker function"""
-    print('Session ID: ', sessionid, '-->', params)
+    print('Session ID: ', datasetid, '-->', params)
 
     if 'xmin' in params:
         print(params['xmin'])
@@ -37,7 +37,7 @@ def execute_gaia(params, sessionid):
         for job in jobs:
             job.join()
 
-    print("execute_gaia::" + str(sessionid) + " finished.")
+    print("execute_gaia::" + str(datasetid) + " finished.")
 
 def search_gaia_db(params, pid, step, entries, queue):
     print("search_gaia_db process id", pid)
