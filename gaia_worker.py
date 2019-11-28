@@ -2,6 +2,9 @@ import multiprocessing
 import csv
 import psycopg2
 
+import astropy.coordinates as coord
+import astropy.units as u
+
 
 def execute_gaia(params, datasetid):
     """thread worker function"""
@@ -87,9 +90,10 @@ def search_gaia_db(params, pid, step, entries, queue):
                     sql2 += " and parallax_over_error > " + parallax[0]
 
             # finish the sql
-            sql += ";"
-            sql2 += ";"
-            #sql += " limit 1;"
+            #sql += ";"
+            #sql2 += ";"
+            sql += " limit 10;"
+            sql += " limit 10;"
 
             # print(sql)
             cursor.execute(sql)
@@ -97,9 +101,10 @@ def search_gaia_db(params, pid, step, entries, queue):
             #print("SQL(" + sql + ") - " + str(no_records) + "\n")
 
             cursor.execute(sql2)
-            record = cursor.fetchone()
-            # print(record)
-            queue.put(record)
+            records = cursor.fetchall()
+            for row in records:
+                # print(record)                
+                queue.put(row)
 
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
