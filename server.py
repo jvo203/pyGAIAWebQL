@@ -24,7 +24,8 @@ class Server(SimpleHTTPRequestHandler):
                     self.send_error(501)
                     return
 
-                json.dump(params)                
+                tmp = json.dumps(params)
+                print(tmp)
 
                 id = uuid.uuid4()
                 search = multiprocessing.Process(
@@ -36,33 +37,33 @@ class Server(SimpleHTTPRequestHandler):
                 self.end_headers()
 
                 #html = io.StringIO()
-                #html.write(
+                # html.write(
                 #    "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n")
-                #html.write(
+                # html.write(
                 #    "<link href=\"https://fonts.googleapis.com/css?family=Inconsolata\" rel=\"stylesheet\"/>\n")
-                #html.write(
+                # html.write(
                 #    "<link href=\"https://fonts.googleapis.com/css?family=Material+Icons\" rel=\"stylesheet\"/>\n")
-                #html.write(
+                # html.write(
                 #    "<script src=\"reconnecting-websocket.js\" defer></script>\n")
 
                 # bootstrap
-                #html.write(
+                # html.write(
                 #    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1, maximum-scale=1\">\n")
-                #html.write(
+                # html.write(
                 #    "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\">\n")
-                #html.write(
+                # html.write(
                 #    "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js\"></script>\n")
-                #html.write(
+                # html.write(
                 #    "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>\n")
 
                 #html.write("<script>var WS_SOCKET = 'ws://';</script>")
 
                 #html.write("<title>GAIA DR2 WebQL</title></head><body>\n")
-                #html.write(
+                # html.write(
                 #    "<div id='session-data' style='width: 0; height: 0;' ")
                 #html.write("data-uuid='" + str(id) + "'></div>\n")
                 #html.write("<h1>GAIA DR2 WebQL</h1>")
-                #html.write("</body></html>")
-                #self.wfile.write(bytes(html.getvalue(), "UTF-8"))                
+                # html.write("</body></html>")
+                #self.wfile.write(bytes(html.getvalue(), "UTF-8"))
         else:
             super().do_GET()
