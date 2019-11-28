@@ -37,6 +37,7 @@ def execute_gaia(params, sessionid):
         for job in jobs:
             job.join()
 
+    print("execute_gaia::" + sessionid + " ended")
 
 def search_gaia_db(params, pid, step, entries, queue):
     print("search_gaia_db process id", pid)
