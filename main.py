@@ -8,7 +8,7 @@ HOST_NAME = ''
 PORT_NUMBER = 8081
 
 if __name__ == '__main__':
-    httpd = ThreadingHTTPServer((HOST_NAME, PORT_NUMBER), Server)
+    httpd = HTTPServer((HOST_NAME, PORT_NUMBER), Server)
     print(time.asctime(), 'GAIAWebQL Server UP - %s:%s' %
           (HOST_NAME, PORT_NUMBER))
     try:
