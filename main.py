@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import time
-from http.server import ThreadingHTTPServer
+from http.server import HTTPServer
+#ThreadingHTTPServer
 from server import Server
 
 HOST_NAME = ''
-PORT_NUMBER = 8080
+PORT_NUMBER = 8081
 
 if __name__ == '__main__':
     httpd = ThreadingHTTPServer((HOST_NAME, PORT_NUMBER), Server)
