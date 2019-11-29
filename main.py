@@ -4,7 +4,7 @@ from http.server import ThreadingHTTPServer
 from server import Server
 
 HOST_NAME = ''
-PORT_NUMBER = 8081
+PORT_NUMBER = 8080
 
 if __name__ == '__main__':
     httpd = ThreadingHTTPServer((HOST_NAME, PORT_NUMBER), Server)
