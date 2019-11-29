@@ -176,11 +176,47 @@ def search_gaia_db(params, pid, step, entries, queue):
                                 if Z > 1000 * float(zmax[0]):
                                     valid = False
 
+                        if 'rmin' in params:
+                            rmin = params['rmin']
+                            if rmin:
+                                if R < 1000 * float(rmin[0]):
+                                    valid = False
+
+                        if 'rmax' in params:
+                            rmax = params['rmax']
+                            if rmax:
+                                if R > 1000 * float(rmax[0]):
+                                    valid = False
+
+                        if 'phimin' in params:
+                            phimin = params['phimin']
+                            if phimin:
+                                if Phi < 1000 * float(phimin[0]):
+                                    valid = False
+
+                        if 'phimax' in params:
+                            phimax = params['phimax']
+                            if phimax:
+                                if Phi > 1000 * float(phimax[0]):
+                                    valid = False
+
+                        if 'mgmin' in params:
+                            mgmin = params['mgmin']
+                            if mgmin:
+                                if M_G < 1000 * float(mgmin[0]):
+                                    valid = False
+
+                        if 'mgmax' in params:
+                            mgmax = params['mgmax']
+                            if mgmax:
+                                if M_G > 1000 * float(mgmax[0]):
+                                    valid = False
+
                     except ValueError:
                         valid = False
 
                     if valid:
-                        queue.put((X, Y, Z, Vx, Vy, Vz, R, Phi))
+                        queue.put((bp_rp, M_G, X, Y, Z, Vx, Vy, Vz, R, Phi))
 
         except (Exception, psycopg2.Error) as error:
             print("Error while connecting to PostgreSQL", error)
